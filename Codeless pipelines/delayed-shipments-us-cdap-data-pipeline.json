@@ -1,0 +1,239 @@
+{
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.1.1",
+        "scope": "SYSTEM"
+    },
+    "description": "Data Pipeline Application",
+    "name": "Delayed-Shipments-US",
+    "config": {
+        "resources": {
+            "memoryMB": 1024,
+            "virtualCores": 1
+        },
+        "driverResources": {
+            "memoryMB": 1024,
+            "virtualCores": 1
+        },
+        "connections": [
+            {
+                "from": "Cleaned Shipments",
+                "to": "Wrangler"
+            },
+            {
+                "from": "Wrangler",
+                "to": "On-Time Shipments US"
+            },
+            {
+                "from": "Wrangler",
+                "to": "ErrorCollector"
+            },
+            {
+                "from": "ErrorCollector",
+                "to": "Drop Error Fields"
+            },
+            {
+                "from": "Drop Error Fields",
+                "to": "Delayed Shipments US"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {},
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": true,
+        "stages": [
+            {
+                "name": "Cleaned Shipments",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsource",
+                    "label": "Cleaned Shipments",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.13.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                        "project": "auto-detect",
+                        "datasetProject": "auto-detect",
+                        "dataset": "logistics_demo",
+                        "table": "delayed_shipments_us",
+                        "referenceName": "Cleaned-Shipments",
+                        "serviceFilePath": "auto-detect"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ]
+            },
+            {
+                "name": "Wrangler",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Wrangler",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.1.4",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "workspaceId": "11e6d5e00959fb19c74e9c23bffcfb47",
+                        "directives": "filter-rows-on regex-not-match origin_country ^United States$\nset-type :time_to_ship float\nset-column time_to_ship time_to_ship / 3600\nsend-to-error time_to_ship > 2",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"double\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"double\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Cleaned Shipments",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ]
+            },
+            {
+                "name": "On-Time Shipments US",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "On-Time Shipments US",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.13.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"double\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                        "referenceName": "On-Time-Shipments-US",
+                        "dataset": "logistics_demo",
+                        "table": "on_time_shipments_us"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"double\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Wrangler",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"double\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ]
+            },
+            {
+                "name": "ErrorCollector",
+                "plugin": {
+                    "name": "ErrorCollector",
+                    "type": "errortransform",
+                    "label": "ErrorCollector",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.3.4",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "messageField": "msg",
+                        "codeField": "code",
+                        "stageField": "node"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Wrangler",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ]
+            },
+            {
+                "name": "Drop Error Fields",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Drop Error Fields",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.1.4",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                        "directives": "drop msg,code,node"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "ErrorCollector",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ]
+            },
+            {
+                "name": "Delayed Shipments US",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "Delayed Shipments US",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.13.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                        "referenceName": "Delayed-Shipments-US",
+                        "dataset": "logistics_demo",
+                        "table": "delayed_shipments_us",
+                        "allowSchemaRelaxation": "false"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Drop Error Fields",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"shipment_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"shipping_time\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"origin_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"destination_city\",\"type\":[\"string\",\"null\"]},{\"name\":\"customer_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"size\",\"type\":[\"string\",\"null\"]},{\"name\":\"product\",\"type\":[\"string\",\"null\"]},{\"name\":\"region_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"hazardous_goods\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"handle_with_care\",\"type\":[\"string\",\"null\"]},{\"name\":\"time_to_ship\",\"type\":[\"string\",\"null\"]},{\"name\":\"signature_required\",\"type\":[\"boolean\",\"null\"]},{\"name\":\"weight\",\"type\":[\"double\",\"null\"]},{\"name\":\"zipcode\",\"type\":[\"long\",\"null\"]},{\"name\":\"price\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ]
+            }
+        ],
+        "schedule": "0 * * * *",
+        "engine": "mapreduce",
+        "numOfRecordsPreview": 100,
+        "description": "Data Pipeline Application",
+        "maxConcurrentRuns": 1
+    }
+}

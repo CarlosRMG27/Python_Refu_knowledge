@@ -1,0 +1,36 @@
+Los area plots están basados en los line plots
+El índice de los dataframes se plotea en el eje x
+Hay que cuidar eso al hacer los plots
+kind='area'
+pyplot es la scripting interface de matplotlib
+
+Un histograma muestra la distribución de frecuencia
+de una variable
+Cuenta cuántas instancias de algún intervalo hay
+df[columna].plot(kind='hist')
+alternativamente
+count,bin_edges=np.histogram(df[columna])
+df[columna].plot(kind='hist',xticks=bin_edges)
+
+Bar chart se usa para comparar valores de una 
+variable en puntos distintos del tiempo
+serie.plot(kind='bar')
+
+Los pie charts ilustran proporción numérica
+df[columna].plot(kind='pie')
+
+
+Los boxplots son maneras de representar 
+la distribución de alguna variable
+df[columna].plot(kind='box')
+
+
+Los scatter plots se usan para plotear dos variables
+normalmente y ver si sería posible que hubiera
+alguna correlación. 
+df.plot(kind='scatter',x=columna1,y=columna2)
+
+
+
+
+
