@@ -1,0 +1,5 @@
+Para splitear un archivo grandote con git bash:
+
+split -l 50000 -d --additional-suffix=.csv Nombre_archivo_grandote.txt split_file
+
+Se spliteará en archivos con formato csv y de 50000 líneas
