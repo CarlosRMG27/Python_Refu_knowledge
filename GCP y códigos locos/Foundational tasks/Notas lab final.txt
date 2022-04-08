@@ -1,0 +1,51 @@
+Dataflow
+Verificar permisos
+Ver que la API esté habilitada
+Crear dataset en BigQuery
+Crear tabla de output
+Crear el flow con dataflow
+
+
+Dataproc
+Crear un cluster
+Acceder al cluster maestro con el comando de gcloud
+Copiar el archivo con este comando: hdfs dfs -cp gs://cloud-training/gsp323/data.txt /data.txt
+Lanzar el trabajo
+
+
+
+Data prep
+Crear un flow, importar el csv
+filtrar y renombrar
+
+
+Speech API
+
+Crear una credeencial
+Crear una instancia en compute engine con todos los permisos
+exportar key
+export API_KEY=AIzaSyDE99Yr1ucmzM5Up8VSDOZKZX8H10pU4Rc
+
+crear un json con la request
+touch request.json
+
+Abrir el json y ponerle (sustituir lo necesario):
+
+{
+  "config": {
+      "encoding":"FLAC",
+      "languageCode": "en-US"
+  },
+  "audio": {
+      "uri":"gs://cloud-samples-tests/speech/brooklyn.flac"
+  }
+}
+
+
+Hacer la request 
+
+curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json \
+"https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" > result.json
+
+Subir el resultado
+gsutil cp result.json gs://qwiklabs-gcp-03-f0cd0ac7849e-marking/task4-gcs-519.result
