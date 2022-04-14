@@ -1,0 +1,21 @@
+#!/bin/bash
+
+line="-----------------------"
+
+echo "Starting as: $(date)"
+echo $line
+
+echo "UPTIME"
+uptime
+echo $line
+
+echo "FREE"
+free
+echo $line
+
+echo "WHO"
+who
+echo $line
+
+echo "Finishing at:$(date)"
+
