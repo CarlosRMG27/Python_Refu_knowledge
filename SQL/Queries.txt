@@ -1,0 +1,59 @@
+2: 
+SELECT 
+distinct Extended_step
+from salary_range_by_job_classification
+
+3:
+Select 
+min(Biweekly_high_Rate)
+From salary_range_by_job_classification
+where biweekly_high_rate <> '$0.00'
+
+4:
+SELECT 
+Max (Biweekly_high_Rate) 
+FROM salary_range_by_job_classification 
+
+5:
+Select
+job_code,
+pay_type
+from salary_range_by_job_classification
+where job_code like '03%'
+
+6:
+Select
+grade,
+eff_date,
+sal_end_date
+from salary_range_by_job_classification
+where grade='Q90H0'
+
+7:
+Select
+biweekly_low_rate
+From salary_range_by_job_classification
+order by biweekly_low_rate asc
+
+8:
+SELECT 
+Job_Code,
+Salary_setID,
+Step
+FROM salary_range_by_job_classification
+where Job_Code between "0110" and "0400"
+
+9:
+select *,cast(Biweekly_High_Rate as float) - cast(Biweekly_Low_Rate as float)
+from salary_range_by_job_classification
+where job_code='0170'
+
+10:
+select distinct Extended_Step
+from salary_range_by_job_classification
+where  Pay_Type  in ('M','H','D')
+
+11:
+select *
+from salary_range_by_job_classification
+where Union_Code = 990 and (SetID in ('SFMTA','COMMN'))

@@ -1,0 +1,7 @@
+Host:     pg.pg4e.com 
+Port:     5432 
+Database: pg4e_5b13532958 
+User:     pg4e_5b13532958 
+Password: pg4e_p_b8584843cac9db9
+
+psql -h pg.pg4e.com -p 5432 -U pg4e_5b13532958 pg4e_5b13532958
