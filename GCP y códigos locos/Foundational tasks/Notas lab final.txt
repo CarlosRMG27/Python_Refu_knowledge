@@ -24,7 +24,7 @@ Speech API
 Crear una credeencial
 Crear una instancia en compute engine con todos los permisos
 exportar key
-export API_KEY=AIzaSyDE99Yr1ucmzM5Up8VSDOZKZX8H10pU4Rc
+export API_KEY=Aquí va una API
 
 crear un json con la request
 touch request.json
